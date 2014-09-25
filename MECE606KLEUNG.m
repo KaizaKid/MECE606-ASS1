@@ -9,8 +9,10 @@ close all;
 clc;
 
 %Create toggler variable
-%h.toggler = 1;
 assignin('base','toggler',1);
+
+%Create a scalar variable
+assignin('base','SCALAR',1);
 
 %Creates a figure and store its structure in a handle so it can be called 
 %later (indirectly). 
@@ -42,6 +44,17 @@ h.imageheight = uicontrol('Style','text','string','','Position',[125 70 100 15])
 h.imagebdepthC = uicontrol('Style','text','string','Bit Depth:','Position',[25 55 100 15]);
 h.imagebdepth = uicontrol('Style','text','string','','Position',[125 55 100 15]);
 
+%Create uicontrol for a scalar button that request user input for a scalar
+%value. The value shall be used in another display textbox
+h.scalarbutton = uicontrol('style','pushbutton','position',[25 125 200 20],'string','Change Scalar');
+
+%Create textbox beside to display current scalar value
+SCALARD = evalin('base','SCALAR');
+h.scalardisplay = uicontrol('style','text','string',SCALARD,'position',[225 125 100 20]);
+
+%Set the scalar button to do something
+set(h.scalarbutton,'callback',{@scalar,h});
+
 %The 'Toggle Image' button currently doesn't do anything. The below is a callback to
 %set the button to toggle the image that will be uploaded
 %From MATLAB Central
@@ -63,7 +76,6 @@ set(h.imageload2,'callback',{@uploadimage2,h});
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
 h.fig1 = figure('position',[650 100 700 700]);
 
-%imresize
 end
 
 
@@ -100,6 +112,9 @@ clf(2);
 
 %Gets the variable that is used in the if/else statement
 togval = evalin('base','toggler');
+
+%Get the scalar variable into this function
+SCALAR = evalin('base','SCALAR');
 
 %If/else that will change images based on the number value of toggle
 if togval == 1
@@ -145,7 +160,6 @@ else
 end
 
 end
-
 
 function h = uploadimage1(hObject,eventdata,h)
 %This function is the action that the button 'Select Image 1' will perform 
@@ -231,7 +245,25 @@ set(h.imageload2,'string',filename);
 
 end
 
+function h = scalar(hObject,eventdata,h)
+%This function prompts user to select an input that changes the scalar of
+%the initial image
 
+%Reads a quick instruction for user
+disp('Please select a value for the initial image to scale. It defaults to 1.');
+
+%Prompt user to select a value
+prompt = 'What value of scalar?';
+
+%Set prompt into a variable
+SCALAR = input(prompt);
+
+%Assign value of scalar to base and re-evaluate
+assignin('base','SCALAR',SCALAR);
+
+set(h.scalardisplay,'string',SCALAR);
+
+end
 
 
 
