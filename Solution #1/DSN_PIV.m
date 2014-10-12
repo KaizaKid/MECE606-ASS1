@@ -344,13 +344,13 @@ end
 
 
 % --- Executes when user attempts to close figure1.
-function figure1_CloseRequestFcn(hObject, eventdata, handles)
+%function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Close all Figures
-close(1);
+%close(1);
 
 % Hint: delete(hObject) closes the figure
-delete(hObject);
+%delete(hObject);

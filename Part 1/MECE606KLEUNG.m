@@ -170,22 +170,27 @@ function h = uploadimage1(hObject,eventdata,h)
 %Below reads instruction for the user to follow
 disp('Select Image Button Pressed. Please select the first image.');
 
+%Take and make Image1 the global variable for one image
+%At the same time set ImPath1 to global
+global Image1
+global ImPath1
+
 %Prompt user to select image while prompting user with instructions
 %Idea taken from Stackoverflow Forum
 %<http://stackoverflow.com/questions/9938267/how-to-select-a-file-through-a-gui-in-matlab>
-[filename, user_canceled] = imgetfile;
-    if user_canceled
-    display('User Pressed Cancel')
-    else
-    display(['User Selected', filename])
-    end
+[Image1, ImPath1] = uigetfile({'*.*';'*.bmp';'*.tif';'*.jpeg';'*.gif'},'Choose Image File');
+    %if user_canceled
+    %display('User Pressed Cancel')
+    %else
+    %display(['User Selected', filename])
+    %end
 
 %Take the image loaded and place it into variables. It takes the image and
 %stores the information of the image in one variable and colormap in another.
 %Idea taken from Stackoverflow Forum
 %<http://stackoverflow.com/questions/9938267/how-to-select-a-file-through-a-gui-in-matlab>    
 %[I1,map1] = imread(filename);
-I1 = imread(filename);
+Image1 = imread(filename);
 
 %Take the information of the image and place it into a variable
 %Line taken from MathWorks
