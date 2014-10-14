@@ -82,8 +82,22 @@ h.winheight = uicontrol('style','edit','string','','Position',[175 440 150 20],'
 h.winoverC = uicontrol('style','text','string','Window Overlap (%):','FontSize',12,'Position',[25 415 200 25]);
 h.winover = uicontrol('style','edit','string','','Position',[225 415 100 25],'BackgroundColor','White');
 
-%Set a new button to proceed with the correlation
-h.crosscorrelate = uicontrol('style','pushbutton','string','Cross Correlate','Position',[125 390 100 20]); 
+%Add location for the start of a subregion section in GUI
+h.windowselecttext = uicontrol('style','text','string','Window Starting Location','FontSize',12,'Position',[25 395 300 20]);
+h.windowselecttext1 = uicontrol('style','text','string','(Single Sub Region)','FontSize',12,'Position',[25 375 300 20]);
+h.winselectxC = uicontrol('style','text','string','X location','FontSize',12,'Position',[25 355 150 20]);
+h.winselectyC = uicontrol('style','text','string','Y location','FontSize',12,'Position',[175 355 150 20]);
+h.winselectx = uicontrol('style','edit','string','','Position',[25 335 150 20],'BackgroundColor','White');
+h.winselecty = uicontrol('style','edit','string','','Position',[175 335 150 20],'BackgroundColor','White');
+
+%Add a new button to proceed with finding the correlation of a window size
+%and subregion at the users input selection
+h.crosscorrelatesub = uicontrol('style','pushbutton','string','Cross Correlate (Sub)','Position',[25 305 150 20]);
+set(h.crosscorrelatesub,'callback',{@crosscorrelatesub,h});
+
+%Set a new button to proceed with the correlation sweeping mode
+h.crosscorrelatesweep = uicontrol('style','pushbutton','string','Cross Correlate (Sweep)','Position',[175 305 150 20]); 
+set(h.crosscorrelatesweep,'callback',{@crosscorrelatesweep,h});
 
 
 end
@@ -291,7 +305,7 @@ ImInfo2 = imfinfo(ImageName2);
 
 end
 
-function h = crosscorrelate(hObject,eventdata,h)
+function h = crosscorrelatesweep(hObject,eventdata,h)
 %This function is set to cross correlate two images using the xcorr2
 %function and output another graph depicting the calculated correlation in
 %3D graph
@@ -310,10 +324,34 @@ winover = (str2double(get(h.winover,'String')))/100;
 wincross = (ImInfo1.Width)/winwidth;
 windown = (ImInfo1.Height)/winheight;
 
-for i = 1:wincross-(wincross*winover):ImInfo1.Width;
+%Get scalar again and offsets
+SCALAR = str2double(get(h.scalardisplay,'String'));
+offsetx = str2double(get(h.offsetx,'String'));
+offsety = str2double(get(h.offsety,'String'));
 
+%Create a loop to scan throughout the image
+for j = 1:1:windown
 
+    for i = 1:1:wincross
     
+        clf(2);
+        figure(2);
+        imagesc(offsetx:ImInfo1.Width*SCALAR, offsety:ImInfo1.Height*SCALAR,Image1);
+        
+        %Take out sections of the images to cross correlate
+        X1ij = Image1((1+((j-1)*winheight)):(j*winheight),(1+((i-1)*winwidth)):(i*winwidth));
+        X2ij = Image2((1+((j-1)*winheight)):(j*winheight),(1+((i-1)*winwidth)):(i*winwidth));
+        Cij = xcorr2(X1ij,X2ij);
+        
+        %Create a box on figure to indicate the location of the correlation
+        rectangle('Position',[(1+((i-1)*winwidth)) (1+((j-1)*winheight)) winwidth winheight],'LineWidth',1,'EdgeColor','White');
+        
+        figure(3);
+        mesh(Cij);
+        %wait(t);
+        
+        clf(3);
+    end 
    
     
 end
@@ -326,5 +364,12 @@ end
 
 %I need to find the vector of max correlation which involves taking from
 %the maximums generated from above
+
+end
+
+function h = crosscorrelatesub(hObject,eventdata,h)
+%This function is set to find a single cross correlation subregion
+%indicated by the user via edit boxes. The cross correlation is then
+%displayed in a new window under a ______ 3D figure
 
 end
