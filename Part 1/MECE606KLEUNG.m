@@ -18,19 +18,19 @@ clc;
 %later (indirectly). 
 %From MATLAB Central
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
-h.fig = figure('position',[150 150 400 600]);
+h.fig = figure('position',[150 150 350 600]);
 
 %Create a button that can be used later to toggle the images also w/ handle
 %From MATLAB Central
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
-h.togglebutton = uicontrol('style','pushbutton','position',[150 520 100 20],'string','Toggle Image');
+h.togglebutton = uicontrol('style','pushbutton','position',[125 520 100 20],'string','Toggle Image');
 
 %Create two buttons to prompt the user to upload images
 %Idea from MATLAB Central
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
-h.imageload1 = uicontrol('style','pushbutton','position',[275 540 50 20],'string','...');
+h.imageload1 = uicontrol('style','pushbutton','position',[250 540 50 20],'string','...');
 %h.imageload2 = uicontrol('style','pushbutton','position',[75 520 250 20],'string','Select Image 2');
-h.imagename = uicontrol('style','edit','position', [75 540 200 20],'string','','BackgroundColor','White');
+h.imagename = uicontrol('style','edit','position', [50 540 200 20],'string','','BackgroundColor','White');
 
 %Create uicontrol to output the image details. This includes all
 %the information required for this assignment. Set a constant that is
@@ -70,15 +70,21 @@ set(h.togglebutton,'callback',{@toggleimage,h});
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
 set(h.imageload1,'callback',{@uploadimage1,h});
 
-%The below sets the 'Select Image 1' button to prompt an image upload
-%Idea from MATLAB Central
-%<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
-%set(h.imageload2,'callback',{@uploadimage2,h});
+%Set a window size option button
+%Include edit textbox to grab users input
+h.windowsizetext = uicontrol('style','text','string','Cross Correlation Window Size','FontSize',15,'Position',[25 480 300 30]);
+h.widthC = uicontrol('style','text','string','Width','FontSize',10,'Position',[25 460 150 20]);
+h.heightC = uicontrol('style','text','string','Height','FontSize',10,'Position',[175 460 150 20]);
+h.winwidth = uicontrol('style','edit','string','','Position',[25 440 150 20],'BackgroundColor','White');
+h.winheight = uicontrol('style','edit','string','','Position',[175 440 150 20],'BackgroundColor','White');
 
-%Create new figure window to display the images
-%Idea from MATLAB Central
-%<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
-%h.fig1 = figure('position',[650 100 700 700]);
+%Add option for window overlap
+h.winoverC = uicontrol('style','text','string','Window Overlap (%):','FontSize',12,'Position',[25 415 200 25]);
+h.winover = uicontrol('style','edit','string','','Position',[225 415 100 25],'BackgroundColor','White');
+
+%Set a new button to proceed with the correlation
+h.crosscorrelate = uicontrol('style','pushbutton','string','Cross Correlate','Position',[125 390 100 20]); 
+
 
 end
 
@@ -218,7 +224,7 @@ function h = uploadimage1(hObject,eventdata,h)
 %<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
 
 %Below reads instruction for the user to follow
-disp('Select Image Button Pressed. Please select the first image.');
+%disp('Select Image Button Pressed. Please select the first image.');
 
 %Take and make Image1 the global variable for one image
 %At the same time set ImPath1 to global
@@ -285,63 +291,40 @@ ImInfo2 = imfinfo(ImageName2);
 
 end
 
-%function h = uploadimage2(hObject,eventdata,h)
-%This function is the action that the button 'Select Image 2' will perform 
-%eventdata is a filler that doesn't do anything right now.
-%Idea taken from MATLAB Central
-%<http://blogs.mathworks.com/pick/2007/12/28/matlab-basics-guis-without-guide/>
+function h = crosscorrelate(hObject,eventdata,h)
+%This function is set to cross correlate two images using the xcorr2
+%function and output another graph depicting the calculated correlation in
+%3D graph
 
-%Below reads instruction for the user to follow
-%disp('Select Image Button Pressed. Please select the second image.');
+global Image1
+global Image2
+global ImInfo1
+%global ImInfo2
 
-%Prompt user to select image while prompting user with instructions
-%Idea taken from Stackoverflow Forum
-%<http://stackoverflow.com/questions/9938267/how-to-select-a-file-through-a-gui-in-matlab>
-%[filename, user_canceled] = imgetfile;
-    %if user_canceled
-    %display('User Pressed Cancel')
-    %else
-    %display(['User Selected', filename])
-    %end
+%Read in user inputs from the windows
+winwidth = str2double(get(h.winwidth,'String'));
+winheight = str2double(get(h.winheight,'String'));
+winover = (str2double(get(h.winover,'String')))/100;
 
-%Take the image loaded and place it into variables. It takes the image and
-%stores the information of the image in one variable and colormap in another.
-%Idea taken from Stackoverflow Forum
-%<http://stackoverflow.com/questions/9938267/how-to-select-a-file-through-a-gui-in-matlab>    
-%I2 = imread(filename);    
+%Find number of windows (without overlap) that can fit into image
+wincross = (ImInfo1.Width)/winwidth;
+windown = (ImInfo1.Height)/winheight;
 
-%Take the information of the image and place it into a variable
-%Line taken from MathWorks
-%<http://www.mathworks.com/help/images/ref/imageinfo.html>
-%INFO2 = imfinfo(filename);
+for i = 1:wincross-(wincross*winover):ImInfo1.Width;
 
-%From the loaded image the values of the image and the colormap must be
-%placed as variables onto MATLAB workspace
-%Idea taken from Stackoverflow Forum
-%<http://stackoverflow.com/questions/9938267/how-to-select-a-file-through-a-gui-in-matlab>
-%assignin('base','I2',I2);
-%assignin('base','INFO2',INFO2');
 
-%set(h.imageload2,'string',filename);
+    
+   
+    
+end
 
-%end
+%Does a cross correlation of the two images as a whole without including
+%window size and window overlap (or scanning function)
+%C = xcorr2(Image1,Image2);
 
-function h = scalar(hObject,eventdata,h)
-%This function prompts user to select an input that changes the scalar of
-%the initial image
+%[max, indices] = max(C);
 
-%Reads a quick instruction for user
-disp('Please select a value for the initial image to scale. It defaults to 1.');
-
-%Prompt user to select a value
-prompt = 'What value of scalar?';
-
-%Set prompt into a variable
-SCALAR = input(prompt);
-
-%Assign value of scalar to base and re-evaluate
-assignin('base','SCALAR',SCALAR);
-
-set(h.scalardisplay,'string',SCALAR);
+%I need to find the vector of max correlation which involves taking from
+%the maximums generated from above
 
 end
