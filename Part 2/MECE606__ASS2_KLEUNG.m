@@ -2,6 +2,9 @@ function MECE606KLEUNG
 %A function that generates a GUI that uploads and displays 
 %two images where a button is present to toggle a switch
 %between the two images
+%For assignment 2 correlation functions were added. Such as sweeping
+%function and a way for user to input mouse controls to select window
+%correlation location.
 %Made by Kaiser Leung, CCID: kleung, ID#: 1234886
 
 %Closes all windows and clear command windows
